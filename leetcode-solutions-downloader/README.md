@@ -12,6 +12,7 @@ This Python script downloads all your *accepted* LeetCode submissions in all lan
 - Downloads problem descriptions (saved as `README.md`).
 - Organizes files as:
 
+```
 output_dir/
 └── problem/
 ├──── README.md
@@ -20,6 +21,7 @@ output_dir/
 │     └── solution_2.java
 └──── rust/
       └── solution_1.rs
+```
 
 ## Setup
 
@@ -34,11 +36,11 @@ cp config.example.json config.json
 
 ### Create and edit your config file
 
-Edit config.json and fill in your:
+Edit `config.json` and fill in your:
 
-leetcode_session: Your LeetCode session cookie
-csrftoken: Your CSRF token cookie
-output_dir: Directory path where solutions will be saved
+`leetcode_session`: Your LeetCode session cookie
+`csrftoken`: Your CSRF token cookie
+`output_dir`: Directory path where solutions will be saved
 
 ### Run the script
 
@@ -46,7 +48,7 @@ output_dir: Directory path where solutions will be saved
 python leetcode-downloader.py
 ```
 
-### Notes
+## Notes
 
 The script relies on LeetCode’s current GraphQL API.
 If LeetCode changes their API, the script may need updates.
