@@ -1,0 +1,5 @@
+{
+    "leetcode_session": "your_leetcode_session_cookie_here",
+    "csrftoken": "your_csrftoken_cookie_here",
+    "output_dir": "./leetcode_solutions"
+}
