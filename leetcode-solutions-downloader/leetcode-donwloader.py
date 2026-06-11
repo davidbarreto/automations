@@ -123,10 +123,10 @@ def get_submission_code(session: requests.Session, submission_id: int) -> Option
     return None
 
 
-def download_problem_description(session: requests.Session, title_slug: str, output_dir: Path):
+def get_problem_info(session: requests.Session, title_slug: str) -> Dict:
     """
-    Download the problem description and save it as README.md in Markdown format.
-    HTML tags are stripped (basic clean-up).
+    Download problem metadata (ID, title, content, difficulty).
+    Used to both save README.md and get problem number for folder name.
     """
     query = {
         "operationName": "questionData",
@@ -146,9 +146,14 @@ def download_problem_description(session: requests.Session, title_slug: str, out
     resp = session.post("https://leetcode.com/graphql", json=query)
     resp.raise_for_status()
     data = resp.json()
-    q = data["data"]["question"]
+    return data["data"]["question"]
 
-    # Build Markdown description
+
+def download_problem_description(q: Dict, output_dir: Path):
+    """
+    Save problem description as README.md in Markdown format.
+    HTML tags are stripped (basic clean-up).
+    """
     description_md = (
         f"# {q['title']} (Difficulty: {q['difficulty']})\n\n"
         f"[LeetCode Link](https://leetcode.com/problems/{q['titleSlug']}/)\n\n"
@@ -216,17 +221,21 @@ def main():
 
     # Loop through problems and download everything
     for problem_slug, langs in problems.items():
-        # Use first submission's titleSlug for description download
+        # Use first submission's titleSlug for description and metadata
         first_lang = next(iter(langs))
         first_submission = langs[first_lang][0]
         title_slug = first_submission["titleSlug"]
 
-        # Create problem folder
-        problem_dir = output_dir / problem_slug
+        # Get full problem info (ID, title, etc.)
+        q = get_problem_info(session, title_slug)
+
+        # Format folder name with zero-padded problem number
+        folder_name = f"{int(q['questionId']):04d}-{slugify(q['title'])}"
+        problem_dir = output_dir / folder_name
         problem_dir.mkdir(exist_ok=True)
 
         # Save problem description
-        download_problem_description(session, title_slug, problem_dir)
+        download_problem_description(q, problem_dir)
 
         # Loop over languages
         for lang, submissions in langs.items():
